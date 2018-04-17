@@ -1,0 +1,43 @@
+#    CHCCLP -f <file>   to execute this script
+
+chcclp session set to cdc;
+
+# Turn on verbose output.
+set verbose;
+
+# Setting variables.
+set variable name "ACCESS_HOSTNAME" value "localhost";
+set variable name "ACCESS_PORT" value "10101";
+set variable name "ACCESS_USERNAME" value "admin";
+set variable name "ACCESS_PASSWORD" value "";
+
+set variable name "SUBSCRIPTION" value "DTK";
+set variable name "SOURCE_DATASTORE" value "db2_65";
+set variable name "TARGET_DATASTORE" value "kafka_5527";
+
+set variable name "KCOP_Class" value "com.datamirror.ts.target.publication.userexit.sample.kafka.KcopDefaultBehaviorSample";
+set variable name "KCOP_Parm" value "";
+
+# Connecting to Access Server.
+connect server
+    hostname "%ACCESS_HOSTNAME%"
+    port "%ACCESS_PORT%"
+    username "%ACCESS_USERNAME%"
+    password "%ACCESS_PASSWORD%";
+
+# Connecting to the source and target datastores.
+connect datastore name "%SOURCE_DATASTORE%";
+connect datastore name "%TARGET_DATASTORE%";
+
+# set subscription level user exit
+modify subscription user exit name "%SUBSCRIPTION%" 
+type javaclass classname %KCOP_Class% 
+parameter %KCOP_Parm%;
+
+# Disconnecting from datastores .
+disconnect datastore name "%SOURCE_DATASTORE%";
+disconnect datastore name "%TARGET_DATASTORE%";
+
+# Disconnect from Access Server and terminate the script.
+disconnect server;
+exit;
